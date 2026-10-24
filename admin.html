@@ -1,19 +1,29 @@
 <!doctype html>
 <html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Queen Cake’s Admin</title>
 <style>
-body{margin:0;background:#fff8fb;color:#30242b;font:16px system-ui,sans-serif}header{background:#8f2458;color:white;padding:20px}main{max-width:850px;margin:20px auto;padding:0 12px}.box,.order{background:white;border:1px solid #f0dce6;border-radius:14px;padding:16px;margin:12px 0}input,select{display:block;width:100%;box-sizing:border-box;padding:12px;margin:7px 0 14px;border:1px solid #e5ccd8;border-radius:9px;font-size:15px}button{padding:11px 15px;border:0;border-radius:9px;background:#8f2458;color:white;font-weight:bold}button:disabled{opacity:.6}.hidden{display:none}.muted{color:#786873;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field{background:#fff8fb;padding:9px;border-radius:8px;overflow-wrap:anywhere}.field b{display:block;font-size:11px;color:#786873}.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.tag{color:#8f2458;background:#f8eaf1;padding:4px 9px;border-radius:20px;font-size:12px}.error{color:#b42318}.ok{color:#167647}@media(max-width:500px){.grid{grid-template-columns:1fr}}
+body{margin:0;background:#fff8fb;color:#30242b;font:16px system-ui,sans-serif}header{background:#8f2458;color:white;padding:20px}main{max-width:850px;margin:20px auto;padding:0 12px}.box,.order{background:white;border:1px solid #f0dce6;border-radius:14px;padding:16px;margin:12px 0}input,select{display:block;width:100%;box-sizing:border-box;padding:12px;margin:7px 0 14px;border:1px solid #e5ccd8;border-radius:9px;font-size:15px}button{padding:11px 15px;border:0;border-radius:9px;background:#8f2458;color:white;font-weight:bold}button:disabled{opacity:.6}.hidden{display:none}.muted{color:#786873;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field{background:#fff8fb;padding:9px;border-radius:8px;overflow-wrap:anywhere}.field b{display:block;font-size:11px;color:#786873}.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.tag{color:#8f2458;background:#f8eaf1;padding:4px 9px;border-radius:20px;font-size:12px}.error{color:#b42318}#productForm label{display:block;font-weight:600;margin-top:8px}#productsAdmin .order img{width:90px;height:75px;object-fit:cover;border-radius:8px}.ok{color:#167647}@media(max-width:500px){.grid{grid-template-columns:1fr}}
 </style></head><body>
 <header><div class="row"><div><h2 style="margin:0">🎂 Queen Cake’s Admin</h2><div>শুধু অনুমোদিত অ্যাডমিনের জন্য</div></div><button id="logout" class="hidden" style="background:#f8eaf1;color:#8f2458">Logout</button></div></header>
 <main>
 <section id="login" class="box"><h3>Admin Login</h3><p class="muted">Firebase Authentication-এ তৈরি করা Admin Email ও Password ব্যবহার করো।</p>
 <form id="loginForm"><label>Email</label><input id="email" type="email" autocomplete="username" required><label>Password</label><input id="password" type="password" autocomplete="current-password" required><button type="submit">Login</button></form><p id="loginMsg"></p></section>
 <section id="dashboard" class="hidden"><div class="box"><div class="row"><div><h3>অর্ডার ড্যাশবোর্ড</h3><div id="signedIn" class="muted"></div></div><button id="refresh">Refresh</button></div><p class="muted">UID Firestore Rules-এ অনুমোদিত থাকলে অর্ডার দেখা যাবে।</p></div>
-<div class="row"><div class="box">মোট অর্ডার <h2 id="total">0</h2></div><div class="box">Pending <h2 id="pending">0</h2></div><div class="box">Delivered <h2 id="delivered">0</h2></div></div><p id="dashMsg"></p><div id="orders"></div></section>
+<div class="row"><div class="box">মোট অর্ডার <h2 id="total">0</h2></div><div class="box">Pending <h2 id="pending">0</h2></div><div class="box">Delivered <h2 id="delivered">0</h2></div></div><div class="box"><h3>🍰 কেক / প্রোডাক্ট ম্যানেজমেন্ট</h3>
+<p class="muted">নতুন প্রোডাক্ট যোগ করো। ছবির জন্য সরাসরি image URL ব্যবহার করো।</p>
+<form id="productForm">
+<label>কেক / আইটেমের নাম</label><input id="pName" required maxlength="100" placeholder="যেমন: Chocolate Cake">
+<label>ক্যাটাগরি</label><select id="pCat"><option>Birthday</option><option>Chocolate</option><option>Customized</option><option>Frozen</option></select>
+<label>দাম (৳)</label><input id="pPrice" type="number" min="1" required>
+<label>ছবির URL</label><input id="pImg" type="url" required placeholder="https://...">
+<label>ছোট বিবরণ</label><input id="pDesc" maxlength="250" placeholder="কেকের বিবরণ">
+<div class="row"><button type="submit" id="pSave">প্রোডাক্ট যোগ করো</button><button type="button" id="pCancel" style="background:#786873">Edit বাতিল</button></div>
+<input type="hidden" id="pId"></form><p id="productMsg"></p><div id="productsAdmin"></div></div>
+<p id="dashMsg"></p><div id="orders"></div></section>
 </main>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import {getFirestore,collection,getDocs,query,orderBy,updateDoc,doc} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import {getFirestore,collection,getDocs,query,orderBy,updateDoc,doc,addDoc,setDoc,deleteDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 const firebaseConfig={apiKey:"AIzaSyC51mSnxO48LgztIdv5PwYol5vaYgu4sYI",authDomain:"queen-cake-s.firebaseapp.com",projectId:"queen-cake-s",storageBucket:"queen-cake-s.firebasestorage.app",messagingSenderId:"980563290823",appId:"1:980563290823:web:fe760d97df0d57bd3a6ce2",measurementId:"G-M2QFLDWHCW"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
 const statuses=["pending","confirmed","preparing","delivered","cancelled"],labels={pending:"Pending",confirmed:"Confirmed",preparing:"Preparing",delivered:"Delivered",cancelled:"Cancelled"};
@@ -31,7 +41,34 @@ const save=document.createElement("button");save.textContent="স্ট্যা
 const actions=document.createElement("div");actions.className="row";actions.style.marginTop="12px";actions.append(select,save);card.append(actions);$("orders").append(card)});
 msg($("dashMsg"),"মোট "+snap.size+"টি অর্ডার লোড হয়েছে।")
 }catch(e){msg($("dashMsg"),"অর্ডার লোড হয়নি: "+(e.code||e.message)+"। UID ও Firestore Rules যাচাই করো।",true)}}
-$("loginForm").addEventListener("submit",async e=>{e.preventDefault();msg($("loginMsg"),"লগইন হচ্ছে…");try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);msg($("loginMsg"),"")}catch(err){msg($("loginMsg"),"লগইন হয়নি: "+(err.code||err.message),true)}});
+ 
+async function loadProducts(){
+ const root=$("productsAdmin");root.replaceChildren();
+ try{
+  const snap=await getDocs(query(collection(db,"products"),orderBy("name")));
+  if(snap.empty){root.textContent="এখনও প্রোডাক্ট যোগ করা হয়নি। উপরের ফর্ম ব্যবহার করো।";return}
+  snap.docs.forEach(d=>{
+   const p=d.data(),card=document.createElement("article");card.className="order";
+   const row=document.createElement("div");row.className="row";
+   const left=document.createElement("div");left.style.display="flex";left.style.gap="12px";left.style.alignItems="center";
+   const img=document.createElement("img");img.src=p.img||"";img.alt=p.name||"product";img.onerror=()=>img.style.display="none";
+   const info=document.createElement("div");const title=document.createElement("strong");title.textContent=p.name||"Unnamed";const meta=document.createElement("div");meta.className="muted";meta.textContent=(p.cat||"")+" • ৳"+(p.price||0);info.append(title,meta);left.append(img,info);
+   const edit=document.createElement("button");edit.textContent="Edit";edit.onclick=()=>{$("pId").value=d.id;$("pName").value=p.name||"";$("pCat").value=p.cat||"Birthday";$("pPrice").value=p.price||"";$("pImg").value=p.img||"";$("pDesc").value=p.desc||"";$("pSave").textContent="পরিবর্তন সেভ";$("productForm").scrollIntoView({behavior:"smooth",block:"start"})};
+   const del=document.createElement("button");del.textContent="Delete";del.style.background="#b42318";del.onclick=async()=>{if(!confirm("এই প্রোডাক্ট মুছে ফেলবে?"))return;try{await deleteDoc(doc(db,"products",d.id));msg($("productMsg"),"প্রোডাক্ট মুছে ফেলা হয়েছে।");await loadProducts()}catch(e){msg($("productMsg"),"মুছতে পারেনি: "+(e.code||e.message),true)}};
+   row.append(left,edit,del);card.append(row);root.append(card)
+  })
+ }catch(e){msg($("productMsg"),"প্রোডাক্ট লোড হয়নি: "+(e.code||e.message)+"। Firestore Rules-এ products অনুমতি যোগ করতে হবে।",true)}
+}
+$("productForm").addEventListener("submit",async e=>{
+ e.preventDefault();const id=$("pId").value;
+ const product={name:$("pName").value.trim(),cat:$("pCat").value,price:Number($("pPrice").value),img:$("pImg").value.trim(),desc:$("pDesc").value.trim(),active:true,updatedAt:serverTimestamp()};
+ const btn=$("pSave");btn.disabled=true;
+ try{if(id){await updateDoc(doc(db,"products",id),product)}else{product.createdAt=serverTimestamp();await addDoc(collection(db,"products"),product)}
+  msg($("productMsg"),id?"প্রোডাক্ট আপডেট হয়েছে।":"প্রোডাক্ট যোগ হয়েছে।");$("productForm").reset();$("pId").value="";btn.textContent="প্রোডাক্ট যোগ করো";await loadProducts()
+ }catch(err){msg($("productMsg"),"সেভ হয়নি: "+(err.code||err.message),true)}finally{btn.disabled=false}
+});
+$("pCancel").onclick=()=>{$("productForm").reset();$("pId").value="";$("pSave").textContent="প্রোডাক্ট যোগ করো"};
+\n$("loginForm").addEventListener("submit",async e=>{e.preventDefault();msg($("loginMsg"),"লগইন হচ্ছে…");try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);msg($("loginMsg"),"")}catch(err){msg($("loginMsg"),"লগইন হয়নি: "+(err.code||err.message),true)}});
 $("logout").onclick=()=>signOut(auth);$("refresh").onclick=load;
-onAuthStateChanged(auth,async user=>{if(user){$("login").classList.add("hidden");$("dashboard").classList.remove("hidden");$("logout").classList.remove("hidden");$("signedIn").textContent="লগইন: "+user.email;await load()}else{$("dashboard").classList.add("hidden");$("login").classList.remove("hidden");$("logout").classList.add("hidden");$("orders").replaceChildren()}});
+onAuthStateChanged(auth,async user=>{if(user){$("login").classList.add("hidden");$("dashboard").classList.remove("hidden");$("logout").classList.remove("hidden");$("signedIn").textContent="লগইন: "+user.email;await load();await loadProducts()}else{$("dashboard").classList.add("hidden");$("login").classList.remove("hidden");$("logout").classList.add("hidden");$("orders").replaceChildren()}});
 </script></body></html>
