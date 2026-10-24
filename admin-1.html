@@ -68,7 +68,7 @@ $("productForm").addEventListener("submit",async e=>{
  }catch(err){msg($("productMsg"),"সেভ হয়নি: "+(err.code||err.message),true)}finally{btn.disabled=false}
 });
 $("pCancel").onclick=()=>{$("productForm").reset();$("pId").value="";$("pSave").textContent="প্রোডাক্ট যোগ করো"};
-\n$("loginForm").addEventListener("submit",async e=>{e.preventDefault();msg($("loginMsg"),"লগইন হচ্ছে…");try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);msg($("loginMsg"),"")}catch(err){msg($("loginMsg"),"লগইন হয়নি: "+(err.code||err.message),true)}});
+$("loginForm").addEventListener("submit",async e=>{e.preventDefault();msg($("loginMsg"),"লগইন হচ্ছে…");try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);msg($("loginMsg"),"")}catch(err){msg($("loginMsg"),"লগইন হয়নি: "+(err.code||err.message),true)}});
 $("logout").onclick=()=>signOut(auth);$("refresh").onclick=load;
 onAuthStateChanged(auth,async user=>{if(user){$("login").classList.add("hidden");$("dashboard").classList.remove("hidden");$("logout").classList.remove("hidden");$("signedIn").textContent="লগইন: "+user.email;await load();await loadProducts()}else{$("dashboard").classList.add("hidden");$("login").classList.remove("hidden");$("logout").classList.add("hidden");$("orders").replaceChildren()}});
 </script></body></html>
